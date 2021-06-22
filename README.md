@@ -16,7 +16,10 @@ To demonstrate service-to-service gRPC requests, this container image is deploye
    gcloud builds submit --tag gcr.io/$GOOGLE_CLOUD_PROJECT/grpc-ping
 
    # Deploy ping service for private access.
-   gcloud run deploy ping-upstream --image gcr.io/$GOOGLE_CLOUD_PROJECT/grpc-ping
+   gcloud run deploy ping-upstream --image gcr.io/$GOOGLE_CLOUD_PROJECT/grpc-ping \
+       --platform=managed \
+       --region=asia-northeast1 \
+       --no-allow-unauthenticated
 
    # Get the host name of the ping service.
    PING_URL=$(gcloud run services describe ping-upstream --format='value(status.url)')
@@ -24,6 +27,8 @@ To demonstrate service-to-service gRPC requests, this container image is deploye
 
    # Deploy ping-relay service for public access.
    gcloud run deploy ping --image gcr.io/$GOOGLE_CLOUD_PROJECT/grpc-ping \
+       --region=asia-northeast1 \
+       --platform=managed \
        --update-env-vars GRPC_PING_HOST=${PING_DOMAIN}:443 \
        --allow-unauthenticated
    ```
